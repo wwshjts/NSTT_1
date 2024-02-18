@@ -23,9 +23,7 @@ int FibHeap::empty() {
     return (min_node_ == nullptr) && (roots.empty());
 }
 
-void FibHeap::insert(int val) {
-
-
+Node* FibHeap::insert(int val) {
     Node* v = new Node(val);
     roots.push_back(v);
     n_++;
@@ -33,13 +31,15 @@ void FibHeap::insert(int val) {
     if (min_node_ == nullptr || (peek_min() > val)) {
         min_node_ = v;
     }
+    return v;
 }
 
-void FibHeap::addNode(Node* v) {
+void FibHeap::addRoot(Node* v) {
     if (v == nullptr) return;
     roots.push_back(v);
     n_++;
-    if (v->val < peek_min()) {
+
+    if (v->val == or_peek_min(v->val)) {
         min_node_ = v;
     }
 }
@@ -61,6 +61,14 @@ int FibHeap::peek_min() {
     return min_node_->val;
 }
 
+int FibHeap::or_peek_min(int val) {
+    if (empty()) {
+        return val;
+    } else {
+        return (val <= peek_min()) ? val : peek_min();
+    }
+}
+
 size_t FibHeap::d() {
     return ceil(log(n_)) + 1; 
 }
@@ -72,12 +80,7 @@ void FibHeap::consolidate() {
     size_t added = 0;
     
     while (roots.size()) {
-        std::cout << "***********\n";
         Node* v = roots.back();
-        for (Node* t : a) {
-            std::cout << t << " | ";
-        }
-        std::cout << "\n";
         if (a[v->degree()] == nullptr) {
             a[v->degree()] = v;
             roots.remove(v);
@@ -109,13 +112,39 @@ void FibHeap::consolidate() {
 
 int FibHeap::extract_min() {
     assert(!empty());
-    // TODO
     roots.remove(min_node_);
     int res = min_node_->val;
     for (Node* v : min_node_->successors) {
-        addNode(v);
+        addRoot(v);
     }
     min_node_ = nullptr;
     consolidate();
     return res;
+}
+void FibHeap::put_away(Node* s) {
+    Node* parent = s->parent;
+    if (parent) {
+        parent->successors.remove(s);
+        if (parent->is_labeled) {
+            put_away(parent);
+        } else {
+            parent->is_labeled = true;
+        }
+    }
+    s->parent = nullptr; 
+    if (s->val == or_peek_min(s->val)) {
+        min_node_ = s;
+    }
+    addRoot(s);
+}
+
+void FibHeap::decrease_key(Node* s, int k) {
+    assert(s != nullptr && s->val >= k);
+    Node* parent = s->parent;
+    s->val = k;
+    if ((parent != nullptr) && (k < parent->val)) {
+        put_away(s);
+    } else if (parent == nullptr && k < min_node_->val) {
+        min_node_ = s;
+    }
 }
