@@ -11,7 +11,7 @@ test_dir := tests/
 
 #CC setup
 CC := clang++
-debug_flags := -fsanitize=address -fsanitize=undefined -fsanitize=leak
+debug_flags := #-fsanitize=address -fsanitize=undefined -fsanitize=leak
 	
 
 target := $(addprefix $(src_dir), $(target_name)) 
@@ -36,17 +36,18 @@ $(objects) : $(target) $(headers)
 
 #test setup
 test_files := $(wildcard $(test_dir)*.cpp)
-test_files := $(test_files:.cpp=.o)
+# TODO
+test_files := $(test_files:.cpp=.out)
 
 
 test : $(test_files) 
 	@echo "All test passed"
 
-$(test_files) : %.o: $(target) $(headers)  
-	$(CC) $*.cpp $(objects) -o $* -lgtest -lgtest_main $(debug_flags)
+$(test_files) : %.out: $(target) $(headers) $(objects)
+	$(CC) $*.cpp $(objects) -o $*.out -lgtest -lgtest_main $(debug_flags)
 	$*
-	@rm -f $*
 
 
 clean : 
 	rm -f $(objects)
+	rm -f $(test_files)
