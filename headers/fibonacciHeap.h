@@ -10,6 +10,7 @@ public:
 
     Node(int val) {
         this->val = val; 
+        this->degree_ = 0;
     }
 
     void addChild(Node s) {
@@ -24,14 +25,23 @@ public:
 
 class FibHeap {
 
+    Node* min_node_;
     void consolidate(FibHeap fib);
+
 public:
-    
-    std::list<Node*> roots;
+    // constructors
+    FibHeap() {
+        min_node_ = nullptr;
+    } 
+
+    FibHeap(std::vector<int> vec);
 
     void insert(int val);
     int peek_min();
+    int empty();
     int extract_min();
     void decrease_key(int s, int k);
-    void merge(FibHeap* f1, FibHeap* f2); 
+    static void merge(FibHeap* dst, FibHeap* src); 
+
+    std::list<Node*> roots;
 };
