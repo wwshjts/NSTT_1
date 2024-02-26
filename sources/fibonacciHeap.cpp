@@ -1,7 +1,7 @@
 #include <assert.h>
 #include <iostream>
 #include <cmath>
-#include "../headers/fibonacciHeap.h"
+#include "fibonacciHeap.h"
 
 FibHeap::FibHeap(std::vector<int> data): FibHeap() {
 

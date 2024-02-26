@@ -1,19 +1,20 @@
 .PHONY : all clean test
 #target setup
-target_name = fibonacciHeap
-headers_name = fibonacciHeap
+target_name = fibonacciHeap 
+headers_name = fibonacciHeap 
 
 #dirs setup
 src_dir := sources/
-header_dir := headers/
+header_dir := sources/
 build_dir := bin/
 test_dir := tests/
 
 #CC setup
 CC := clang++
-debug_flags := #-fsanitize=address -fsanitize=undefined -fsanitize=leak
+debug_flags := -fsanitize=address -fsanitize=undefined -fsanitize=leak
 	
 
+#declaring a dependences 
 target := $(addprefix $(src_dir), $(target_name)) 
 target := $(addsuffix .cpp, $(target))
 
@@ -30,8 +31,9 @@ all : $(build_dir) $(objects)
 $(build_dir) : 
 	mkdir $(build_dir)
 
-$(objects) : $(target) $(headers) 
-	$(CC) -c $(target) -o $(objects) $(debug_flags) 
+
+$(objects) : $(build_dir)%.o : $(target) $(headers) 
+	$(CC) -c $(src_dir)$*.cpp  -o  $(build_dir)$*.o
 
 
 #test setup
@@ -43,9 +45,9 @@ test_files := $(test_files:.cpp=.out)
 test : $(test_files) 
 	@echo "All test passed"
 
-$(test_files) : %.out: $(target) $(headers) $(objects)
+$(test_files) : %.out: $(target) $(headers) $(objects) 
 	$(CC) $*.cpp $(objects) -o $*.out -lgtest -lgtest_main $(debug_flags)
-	$*
+	$*.out
 
 
 clean : 

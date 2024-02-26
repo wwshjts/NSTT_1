@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 #include <vector>
-#include "../headers/fibonacciHeap.h"
+#include "../sources/fibonacciHeap.h"
 
 class FibHeapTest : public testing::Test {
  protected:
