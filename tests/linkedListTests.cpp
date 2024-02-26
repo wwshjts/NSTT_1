@@ -4,8 +4,6 @@
 
 class LinkedListTest : public testing::Test {
  protected:
-  // You can remove any or all of the following functions if their bodies would
-  // be empty.
     LinkedListTest() {
         std::vector<int> tmp = {1, 2, 3, 4, 5};
         for (int item : tmp) {
@@ -20,21 +18,6 @@ class LinkedListTest : public testing::Test {
 
     }
 
-  // If the constructor and destructor are not enough for setting up
-  // and cleaning up each test, you can define the following methods:
-/*
-  void SetUp() override {
-     // Code here will be called immediately after the constructor (right
-     // before each test).
-  }
-
-  void TearDown() override {
-     // Code here will be called immediately after each test (right
-     // before the destructor).
-  }
-*/
-  // Class members declared here can be used by all tests in the test suite
-  // for Foo.
 public:
     void initList(LinkedList* s, std::vector<Node*>& vec) {
         for (Node* item : vec) {
@@ -109,6 +92,8 @@ TEST_F(LinkedListTest, RemoveAllNodes) {
     EXPECT_EQ(0, list.size());
     EXPECT_TRUE(list.empty());
 }
+
+// TODO Broken merge?
 /*
 TEST_F(LinkedListTest, MergeEmptyEmpty) {
     LinkedList l1 = LinkedList();

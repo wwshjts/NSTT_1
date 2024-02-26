@@ -40,20 +40,21 @@ public:
 class Node {
 public:
     int val;
-    // this things must be protected somehow
+    // TODO this things must be protected somehow, but must be accessed from code in FibHeap
     int is_labeled;
     Node* parent;
     listNode* link;
-    std::list<Node*> successors;
+    LinkedList successors = LinkedList();
 
     Node(int val) {
         this->val = val; 
         is_labeled = 0;
         parent = nullptr;
+        link = nullptr;
     }
 
     void addChild(Node* s) {
-        successors.push_back(s);
+        successors.add(s);
         s->parent = this;
     }
 
@@ -75,6 +76,7 @@ public:
     FibHeap() {
         min_node_ = nullptr;
         n_ = 0;
+        roots = LinkedList();
     } 
 
     FibHeap(std::vector<int> data);
@@ -91,5 +93,5 @@ public:
     void merge(FibHeap* src); 
     void put_away(Node* s);
 
-    std::list<Node*> roots;
+    LinkedList roots;
 };

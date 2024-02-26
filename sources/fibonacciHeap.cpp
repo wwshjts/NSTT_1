@@ -90,6 +90,7 @@ Node* LinkedList::pop() {
     return res;
 }
 
+// TODO: I don't know how to implement merge without nulling other list and with O(1) complexity(without copy)
 void LinkedList::merge(LinkedList* other) {
     if (other->empty()) return;
 
@@ -115,7 +116,7 @@ FibHeap::FibHeap(std::vector<int> data): FibHeap() {
     int min;
     for (int item : data) {
         Node* v = new Node(item);
-        roots.push_back(v);
+        roots.add(v);
         n_++;
         if (min_node_ == nullptr || min > item) {
             min_node_ = v;
@@ -126,8 +127,7 @@ FibHeap::FibHeap(std::vector<int> data): FibHeap() {
 // recursively deletes all nodes in a tree
 void FibHeap::DFS_delete(Node* v) {
     while (!v->successors.empty()) {
-        Node* tmp = v->successors.front();
-        v->successors.pop_front();
+        Node* tmp = v->successors.pop();
         DFS_delete(tmp); 
         delete(tmp);
     }
@@ -136,8 +136,7 @@ void FibHeap::DFS_delete(Node* v) {
 
 FibHeap::~FibHeap() {
     while(!roots.empty()) {
-        Node* v = roots.front();
-        roots.pop_front();
+        Node* v = roots.pop();
         DFS_delete(v);
         delete(v);
     }
@@ -149,7 +148,7 @@ int FibHeap::empty() {
 
 Node* FibHeap::insert(int val) {
     Node* v = new Node(val);
-    roots.push_back(v);
+    roots.add(v);
     n_++;
 
     if (min_node_ == nullptr || (peek_min() > val)) {
@@ -160,7 +159,7 @@ Node* FibHeap::insert(int val) {
 
 void FibHeap::addRoot(Node* v) {
     if (v == nullptr) return;
-    roots.push_back(v);
+    roots.add(v);
     n_++;
 
     if (v->val == or_peek_min(v->val)) {
@@ -169,7 +168,7 @@ void FibHeap::addRoot(Node* v) {
 }
 
 void FibHeap::merge(FibHeap* src) {
-    this->roots.merge(src->roots);
+    this->roots.merge(&src->roots);
 
     if ((!this->empty() && !src->empty()) && this->peek_min() > src->peek_min()) {
         this->min_node_ = src->min_node_;
@@ -204,24 +203,21 @@ void FibHeap::consolidate() {
     size_t added = 0;
     
     while (roots.size()) {
-        Node* v = roots.back();
+        Node* v = roots.peek();
         if (a[v->degree()] == nullptr) {
             a[v->degree()] = v;
-            // TODO
             roots.remove(v);
         } else {
             Node* w = a[v->degree()];
             a[v->degree()] = nullptr;
             added--;
-            // TODO
-            roots.remove(w);
             roots.remove(v);
             if (v->val <= w->val) {
                 v->addChild(w);
-                roots.push_back(v);
+                roots.add(v);
             } else {
                 w->addChild(v);
-                roots.push_back(w);
+                roots.add(w);
             }
         }
     } 
@@ -232,19 +228,15 @@ void FibHeap::consolidate() {
             min_node_ = v;
         }
 
-        roots.push_back(v);
+        roots.add(v);
     } 
 }
 
 int FibHeap::extract_min() {
     assert(!empty());
-    // TODO
     roots.remove(min_node_);
     int res = min_node_->val;
-    //TODO 
-    for (Node* v : min_node_->successors) {
-        addRoot(v);
-    }
+    roots.merge(&min_node_->successors);
     delete(min_node_);
     min_node_ = nullptr;
     consolidate();
