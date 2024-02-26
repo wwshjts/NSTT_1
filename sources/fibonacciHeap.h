@@ -1,5 +1,41 @@
 #include <vector>
 #include <list>
+class Node;
+
+struct listNode {
+    struct listNode* next;
+    struct listNode* prev;
+    Node* node;
+
+    listNode() { 
+        next = nullptr;
+        prev = nullptr;
+        node = nullptr;
+    }
+};
+
+class LinkedList {
+    listNode* head_;
+    listNode* tail_;
+    size_t size_;
+
+public:
+    LinkedList() {
+        head_ = nullptr;
+        tail_ = nullptr;
+        size_ = 0;
+    }
+    ~LinkedList();
+    int empty();
+    size_t const size();
+    void add(Node*);
+    Node* peek();
+    Node* pop();
+    void remove(Node*);
+    void merge(LinkedList*);
+    int equal(LinkedList*);
+};
+
 // TODO maybe this class must be inner class of FibHeap? 
 class Node {
 public:
@@ -7,6 +43,7 @@ public:
     // this things must be protected somehow
     int is_labeled;
     Node* parent;
+    listNode* link;
     std::list<Node*> successors;
 
     Node(int val) {
@@ -23,7 +60,6 @@ public:
     int degree() {
         return successors.size();
     }
-
 };
 
 class FibHeap {

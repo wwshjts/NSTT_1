@@ -3,6 +3,111 @@
 #include <cmath>
 #include "fibonacciHeap.h"
 
+LinkedList::~LinkedList() {
+    listNode* curr = head_;
+    while (curr) { 
+        listNode* tmp = curr->next;
+        delete(curr);
+        curr = tmp;
+    }
+}
+
+int LinkedList::empty() {
+    // is this a good assertion usage? 
+    return (head_ == nullptr) && (tail_ == nullptr);
+}
+
+size_t const LinkedList::size() {
+    return size_;
+}
+
+int LinkedList::equal(LinkedList* other) {
+    assert(other != nullptr);
+    if (this->size() != other->size()) {
+        return 0;
+    }
+    listNode* v1 = this->head_;
+    listNode* v2 = other->head_; 
+    size_t size = this->size();
+    for (size_t i = 0; i < size; i++) {
+        if (v1->node->val != v2->node->val) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+void LinkedList::add(Node* node) {
+    assert(node != nullptr);
+    listNode* v = new listNode();
+    v->node = node;
+    node->link = v;
+    if (empty()) {
+        head_ = v;
+        tail_ = v;
+    } else {
+        tail_->next = v;
+        v->prev = tail_;
+        tail_ = v;
+    }
+    size_++;
+}
+
+void LinkedList::remove(Node* node) {
+    assert(node != nullptr);
+    assert(!empty());
+    assert(node->link != nullptr);
+    listNode* v = node->link;
+    listNode* next = node->link->next;
+    listNode* prev = node->link->prev;
+
+    if (next) {
+        next->prev = prev;
+    } else {
+        tail_ = prev;
+    }
+
+    if (prev) {
+        prev->next = next;
+    } else {
+        head_ = next;
+    }
+
+    size_--;
+    node->link = nullptr;
+    delete(v);
+}
+
+Node* LinkedList::peek() {
+    assert(!empty());
+    return tail_->node;
+}
+
+Node* LinkedList::pop() {
+    assert(!empty());
+    Node* res = tail_->node;
+    remove(res);
+    return res;
+}
+
+void LinkedList::merge(LinkedList* other) {
+    if (other->empty()) return;
+
+    if (this->empty()) {
+        this->head_ = other->head_;
+        this->tail_ = other->tail_;
+        this->size_ = other->size_;
+    } else {
+        this->tail_->next = other->head_;
+        other->head_->prev = this->tail_;
+        this->tail_ = other->tail_;
+        this->size_ += other->size_;
+    }
+    other->head_ = nullptr;
+    other->tail_ = nullptr;
+}
+
+
 FibHeap::FibHeap(std::vector<int> data): FibHeap() {
 
     if (data.empty()) return;
@@ -36,7 +141,6 @@ FibHeap::~FibHeap() {
         DFS_delete(v);
         delete(v);
     }
-    std::cout << "Done dstr " << roots.empty() << "\n";
 }
 
 int FibHeap::empty() {
@@ -137,6 +241,7 @@ int FibHeap::extract_min() {
     // TODO
     roots.remove(min_node_);
     int res = min_node_->val;
+    //TODO 
     for (Node* v : min_node_->successors) {
         addRoot(v);
     }
