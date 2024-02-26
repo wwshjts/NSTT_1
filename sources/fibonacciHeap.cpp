@@ -18,6 +18,26 @@ FibHeap::FibHeap(std::vector<int> data): FibHeap() {
         }
     }
 }
+// recursively deletes all nodes in a tree
+void FibHeap::DFS_delete(Node* v) {
+    while (!v->successors.empty()) {
+        Node* tmp = v->successors.front();
+        v->successors.pop_front();
+        DFS_delete(tmp); 
+        delete(tmp);
+    }
+    return;
+}
+
+FibHeap::~FibHeap() {
+    while(!roots.empty()) {
+        Node* v = roots.front();
+        roots.pop_front();
+        DFS_delete(v);
+        delete(v);
+    }
+    std::cout << "Done dstr " << roots.empty() << "\n";
+}
 
 int FibHeap::empty() {
     return (min_node_ == nullptr) && (roots.empty());
@@ -83,11 +103,13 @@ void FibHeap::consolidate() {
         Node* v = roots.back();
         if (a[v->degree()] == nullptr) {
             a[v->degree()] = v;
+            // TODO
             roots.remove(v);
         } else {
             Node* w = a[v->degree()];
             a[v->degree()] = nullptr;
             added--;
+            // TODO
             roots.remove(w);
             roots.remove(v);
             if (v->val <= w->val) {
@@ -112,15 +134,18 @@ void FibHeap::consolidate() {
 
 int FibHeap::extract_min() {
     assert(!empty());
+    // TODO
     roots.remove(min_node_);
     int res = min_node_->val;
     for (Node* v : min_node_->successors) {
         addRoot(v);
     }
+    delete(min_node_);
     min_node_ = nullptr;
     consolidate();
     return res;
 }
+
 void FibHeap::put_away(Node* s) {
     Node* parent = s->parent;
     if (parent) {

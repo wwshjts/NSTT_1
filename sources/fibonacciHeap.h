@@ -32,6 +32,7 @@ class FibHeap {
     size_t n_;
     void consolidate();
     void addRoot(Node* v);
+    void DFS_delete(Node* v);
 
 public:
     // constructors
@@ -41,6 +42,7 @@ public:
     } 
 
     FibHeap(std::vector<int> data);
+    ~FibHeap();
     // insert val into heap, returns ptr on it
     Node* insert(int val);
     int peek_min();
