@@ -28,15 +28,15 @@ public:
 };
 
 TEST_F(LinkedListTest, Empty) {
-    LinkedList l1 = LinkedList();
-    LinkedList l2 = LinkedList();
+    LinkedList l1;
+    LinkedList l2;
     EXPECT_TRUE(l1.equal(&l1));
     EXPECT_TRUE(l2.equal(&l2));
 }
 
 TEST_F(LinkedListTest, Equal) {
-    LinkedList list = LinkedList();
-    LinkedList other = LinkedList();
+    LinkedList list;
+    LinkedList other; 
     for (Node* v : a) {
         list.add(v);
         other.add(v);
@@ -47,7 +47,7 @@ TEST_F(LinkedListTest, Equal) {
 }
 
 TEST_F(LinkedListTest, Get) {
-    LinkedList list = LinkedList();
+    LinkedList list;
     initList(&list, a);
     EXPECT_FALSE(list.empty());
     EXPECT_EQ(5, list.pop()->val);
@@ -59,7 +59,7 @@ TEST_F(LinkedListTest, Get) {
 }
 
 TEST_F(LinkedListTest, RemoveOneNode) {
-    LinkedList list = LinkedList();
+    LinkedList list;
     initList(&list, a);
 
     list.remove(a[3]); 
@@ -72,7 +72,7 @@ TEST_F(LinkedListTest, RemoveOneNode) {
 }
 
 TEST_F(LinkedListTest, RemoveSomeNodes) {
-    LinkedList list = LinkedList();
+    LinkedList list;
     initList(&list, a);
     list.remove(a[3]); 
     list.remove(a[1]); 
@@ -84,7 +84,7 @@ TEST_F(LinkedListTest, RemoveSomeNodes) {
 }
 
 TEST_F(LinkedListTest, RemoveAllNodes) {
-    LinkedList list = LinkedList();
+    LinkedList list;
     initList(&list, a);
     for (Node* v : a) {
         list.remove(v);
@@ -96,8 +96,8 @@ TEST_F(LinkedListTest, RemoveAllNodes) {
 // TODO Broken merge?
 /*
 TEST_F(LinkedListTest, MergeEmptyEmpty) {
-    LinkedList l1 = LinkedList();
-    LinkedList l2 = LinkedList();
+    LinkedList l1;
+    LinkedList l2;
 
     l1.merge(&l2);
     EXPECT_EQ(0, l1.size());
@@ -105,10 +105,10 @@ TEST_F(LinkedListTest, MergeEmptyEmpty) {
 }
 
 TEST_F(LinkedListTest, MergeFullEmpty) {
-    LinkedList list = LinkedList();
+    LinkedList list;
     initList(&list, a);
     size_t res = list.size();
-    LinkedList l = LinkedList();
+    LinkedList l;
 
     list.merge(&l);
     EXPECT_EQ(res, list.size());
@@ -116,7 +116,7 @@ TEST_F(LinkedListTest, MergeFullEmpty) {
 }
 
 TEST_F(LinkedListTest, MergeEmptyFull) {
-    LinkedList list = LinkedList();
+    LinkedList list;
     initList(&list, a);
     size_t res = list.size();
     LinkedList l = LinkedList();
@@ -128,8 +128,8 @@ TEST_F(LinkedListTest, MergeEmptyFull) {
 }
 
 TEST_F(LinkedListTest, Merge) {
-    LinkedList l1 = LinkedList();
-    LinkedList l2 = LinkedList();
+    LinkedList l1;
+    LinkedList l2;
     l1.add(new Node{1}); 
     l1.add(new Node{2}); 
     l2.add(new Node{3}); 

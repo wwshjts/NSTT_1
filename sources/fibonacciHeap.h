@@ -44,7 +44,7 @@ public:
     int is_labeled;
     Node* parent;
     listNode* link;
-    LinkedList successors = LinkedList();
+    LinkedList successors;
 
     Node(int val) {
         this->val = val; 
@@ -76,7 +76,6 @@ public:
     FibHeap() {
         min_node_ = nullptr;
         n_ = 0;
-        roots = LinkedList();
     } 
 
     FibHeap(std::vector<int> data);

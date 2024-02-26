@@ -39,7 +39,7 @@ int LinkedList::equal(LinkedList* other) {
 
 void LinkedList::add(Node* node) {
     assert(node != nullptr);
-    listNode* v = new listNode();
+    listNode* v = new listNode;
     v->node = node;
     node->link = v;
     if (empty()) {
