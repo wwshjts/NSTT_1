@@ -1,6 +1,7 @@
 #include <assert.h>
 #include <iostream>
 #include <cmath>
+#include <set>
 #include "fibonacciHeap.h"
 
 LinkedList::~LinkedList() {
@@ -19,6 +20,16 @@ int LinkedList::empty() const {
 
 size_t LinkedList::size() const {
     return size_;
+}
+
+size_t LinkedList::degree() const {
+    listNode* curr = head_;
+    std::set<size_t> d;
+    while (curr) {
+        d.insert(curr->node->degree());
+        curr = curr->next;
+    }
+    return d.size();
 }
 
 int LinkedList::equal(LinkedList* other) {
@@ -146,6 +157,10 @@ int FibHeap::empty() const {
     return (min_node_ == nullptr) && (roots.empty());
 }
 
+size_t FibHeap::degrees() const {
+    return roots.degree();
+}
+
 Node* FibHeap::insert(int val) {
     Node* v = new Node(val);
     roots.add(v);
@@ -197,11 +212,10 @@ size_t FibHeap::d() const {
 }
 
 void FibHeap::consolidate() {
-    size_t d_n = d();    
+    size_t d_n = d() + 1;    
     std::vector<Node*> a(d_n);
 
     size_t added = 0;
-    
     while (roots.size()) {
         Node* v = roots.peek();
         if (a[v->degree()] == nullptr) {

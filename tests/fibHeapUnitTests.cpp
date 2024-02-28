@@ -70,6 +70,15 @@ TEST_F (FibHeapTest, DecreaseKey) {
     EXPECT_TRUE(h_.empty());
 }
 
+TEST_F (FibHeapTest, ConsolidateTest) {
+    for (int i = 0; i < 100; i++) {
+        h_.insert(std::rand());
+    }
+    h_.consolidate();
+    EXPECT_TRUE(h_.degrees() <= h_.d());
+}
+
+
 int main() {
     //adding new code
     testing::InitGoogleTest();

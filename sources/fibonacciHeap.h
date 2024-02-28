@@ -1,5 +1,6 @@
 #include <vector>
 #include <list>
+#include <set>
 class Node;
 
 struct listNode {
@@ -28,6 +29,8 @@ public:
     ~LinkedList();
     int empty() const;
     size_t size() const;
+    // returns number of different degrees of the nodes in list
+    size_t degree() const;
     void add(Node*);
     Node* peek();
     Node* pop();
@@ -58,7 +61,7 @@ public:
         s->parent = this;
     }
 
-    int degree() {
+    size_t degree() {
         return successors.size();
     }
 };
@@ -67,7 +70,6 @@ class FibHeap {
 
     Node* min_node_;
     size_t n_;
-    void consolidate();
     void addRoot(Node* v);
     void DFS_delete(Node* v);
 
@@ -87,6 +89,9 @@ public:
     int or_peek_min(int val);
     int empty() const;
     size_t d() const;
+    // return number of different degrees of roots
+    size_t degrees() const;
+    void consolidate();
     int extract_min();
     void decrease_key(Node* s, int k);
     void merge(FibHeap* src); 
