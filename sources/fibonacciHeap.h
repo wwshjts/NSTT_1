@@ -26,8 +26,8 @@ public:
         size_ = 0;
     }
     ~LinkedList();
-    int empty();
-    size_t const size();
+    int empty() const;
+    size_t size() const;
     void add(Node*);
     Node* peek();
     Node* pop();
@@ -85,8 +85,8 @@ public:
     int peek_min();
     // return minimum of val and heap.peek_min() if heap is empty returns val
     int or_peek_min(int val);
-    int empty();
-    size_t d();
+    int empty() const;
+    size_t d() const;
     int extract_min();
     void decrease_key(Node* s, int k);
     void merge(FibHeap* src); 

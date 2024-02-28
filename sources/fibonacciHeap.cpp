@@ -12,12 +12,12 @@ LinkedList::~LinkedList() {
     }
 }
 
-int LinkedList::empty() {
+int LinkedList::empty() const {
     // is this a good assertion usage? 
     return (head_ == nullptr) && (tail_ == nullptr);
 }
 
-size_t const LinkedList::size() {
+size_t LinkedList::size() const {
     return size_;
 }
 
@@ -142,7 +142,7 @@ FibHeap::~FibHeap() {
     }
 }
 
-int FibHeap::empty() {
+int FibHeap::empty() const {
     return (min_node_ == nullptr) && (roots.empty());
 }
 
@@ -192,7 +192,7 @@ int FibHeap::or_peek_min(int val) {
     }
 }
 
-size_t FibHeap::d() {
+size_t FibHeap::d() const {
     return ceil(log(n_)) + 1; 
 }
 
