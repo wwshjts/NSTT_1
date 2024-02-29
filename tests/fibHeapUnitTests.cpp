@@ -75,7 +75,7 @@ TEST_F (FibHeapTest, ConsolidateTest) {
         h_.insert(std::rand());
     }
     h_.consolidate();
-    EXPECT_TRUE(h_.degrees() <= h_.d());
+    EXPECT_TRUE(h_.degrees() == h_.roots.size());
 }
 
 
