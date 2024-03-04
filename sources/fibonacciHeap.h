@@ -3,12 +3,17 @@
 #include <set>
 
 class Node;
+
 struct ListNode {
     struct ListNode* next;
     struct ListNode* prev;
     Node* node;
 
     ListNode() : next(nullptr), prev(nullptr), node(nullptr) {}
+    ListNode(Node* node) : next(nullptr), prev(nullptr), node(node) {}
+    ListNode(ListNode& other) : next(other.next), prev(other.next), node(other.node) {}
+    ListNode& operator=(ListNode& other);
+    ~ListNode() = default;
 };
 
 
@@ -20,14 +25,18 @@ class LinkedList {
 public:
     // constructors and destructors
     LinkedList() : head_(nullptr), tail_(nullptr), size_(0) {}
+    LinkedList(LinkedList& other);
+    LinkedList& operator=(LinkedList& other);
     ~LinkedList();
 
     // returns number of different degrees of the nodes in list
     size_t degree() const;
     void add(Node*);
+    void add(ListNode*);
     Node* peek();
     Node* pop();
     void remove(Node*);
+    void remove(ListNode*);
     // after merging src is no longer available
     static void merge(LinkedList& dst, LinkedList& src);
     bool equal(LinkedList& other) const;
@@ -47,6 +56,9 @@ public:
     LinkedList successors;
 
     Node(int val) : val(val), is_labeled_(false), parent_(nullptr), link_(nullptr), successors() {}
+    Node(Node& other) : val(other.val), is_labeled_(other.parent_), link_(other.link_), successors(other.successors) {} 
+    Node& operator=(Node& other);
+    ~Node() = default;
 
     void addChild(Node* s) {
         successors.add(s);
@@ -71,6 +83,8 @@ public:
     // constructors and destructors
     FibHeap() : min_node_(nullptr), n_(0), roots() {} 
     FibHeap(std::vector<int>& data);
+    FibHeap(FibHeap& other);
+    FibHeap& operator=(FibHeap& other);
     ~FibHeap();
 
     // insert val into heap, returns ptr on it

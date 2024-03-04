@@ -4,6 +4,54 @@
 #include <set>
 #include "fibonacciHeap.h"
 
+Node& Node::operator=(Node& other) {
+    if (this == &other) {
+        return *this;
+    }
+    this->val = other.val;
+    this->link_ = other.link_;
+    this->is_labeled_ = other.is_labeled_;
+    // some recursion stuff
+    this->successors = other.successors;
+    return *this;
+}
+
+// is it good design?
+ListNode& ListNode::operator=(ListNode& other) {
+    this->node = other.node;
+    return *this;
+}
+
+LinkedList::LinkedList(LinkedList& other) : LinkedList() {
+    ListNode* curr = other.head_;
+    while (curr) { 
+        ListNode* tmp = new ListNode(curr->node);
+        add(tmp);
+        curr = curr->next;
+    }
+}
+
+LinkedList& LinkedList:: operator=(LinkedList& other) { 
+    ListNode* dst = head_;
+    ListNode* src = other.head_;
+    while (dst && src) {
+        *dst = *src; 
+    }
+
+    while (src) {
+        ListNode* tmp = new ListNode(src->node);
+        add(tmp);
+        src = src->next;
+    }
+
+    while (dst) {
+        ListNode* tmp = dst->next; 
+        remove(dst);
+        dst = tmp;
+    }
+    return *this;
+}
+
 LinkedList::~LinkedList() {
     ListNode* curr = head_;
     while (curr) { 
@@ -31,7 +79,6 @@ size_t LinkedList::degree() const {
     return d.size();
 }
 
-// TODO reference and bool
 bool LinkedList::equal(LinkedList& other) const {
     if (size() != other.size()) {
         return 0;
@@ -47,11 +94,7 @@ bool LinkedList::equal(LinkedList& other) const {
     return true;
 }
 
-void LinkedList::add(Node* node) {
-    assert(node != nullptr);
-    ListNode* v = new ListNode;
-    v->node = node;
-    node->link_ = v;
+void LinkedList::add(ListNode* v) {
     if (empty()) {
         head_ = v;
         tail_ = v;
@@ -63,13 +106,20 @@ void LinkedList::add(Node* node) {
     size_++;
 }
 
-void LinkedList::remove(Node* node) {
+void LinkedList::add(Node* node) {
     assert(node != nullptr);
+    ListNode* v = new ListNode;
+    v->node = node;
+    node->link_ = v;
+    add(v);
+}
+
+void LinkedList::remove(ListNode* v) {
+    assert(v != nullptr);
     assert(!empty());
-    assert(node->link_ != nullptr);
-    ListNode* v = node->link_;
-    ListNode* next = node->link_->next;
-    ListNode* prev = node->link_->prev;
+
+    ListNode* next = v->next;
+    ListNode* prev = v->prev;
 
     if (next) {
         next->prev = prev;
@@ -84,8 +134,14 @@ void LinkedList::remove(Node* node) {
     }
 
     size_--;
-    node->link_ = nullptr;
+    v->node->link_ = nullptr;
     delete v;
+}
+
+
+void LinkedList::remove(Node* node) {
+    assert(node->link_ != nullptr);
+    remove(node->link_);
 }
 
 Node* LinkedList::peek() {
@@ -96,7 +152,7 @@ Node* LinkedList::peek() {
 Node* LinkedList::pop() {
     assert(!empty());
     Node* res = tail_->node;
-    remove(res);
+    remove(tail_);
     return res;
 }
 
@@ -134,6 +190,11 @@ FibHeap::FibHeap(std::vector<int>& data): FibHeap() {
         }
     }
 }
+
+FibHeap::FibHeap(FibHeap& other) : FibHeap() {
+     
+}
+
 // recursively deletes all nodes in a tree
 void FibHeap::dfs_delete(Node* v) {
     while (!v->successors.empty()) {
