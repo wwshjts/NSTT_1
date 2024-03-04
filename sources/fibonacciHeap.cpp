@@ -16,42 +16,6 @@ Node& Node::operator=(Node& other) {
     return *this;
 }
 
-// is it good design?
-ListNode& ListNode::operator=(ListNode& other) {
-    this->node = other.node;
-    return *this;
-}
-
-LinkedList::LinkedList(LinkedList& other) : LinkedList() {
-    ListNode* curr = other.head_;
-    while (curr) { 
-        ListNode* tmp = new ListNode(curr->node);
-        add(tmp);
-        curr = curr->next;
-    }
-}
-
-LinkedList& LinkedList:: operator=(LinkedList& other) { 
-    ListNode* dst = head_;
-    ListNode* src = other.head_;
-    while (dst && src) {
-        *dst = *src; 
-    }
-
-    while (src) {
-        ListNode* tmp = new ListNode(src->node);
-        add(tmp);
-        src = src->next;
-    }
-
-    while (dst) {
-        ListNode* tmp = dst->next; 
-        remove(dst);
-        dst = tmp;
-    }
-    return *this;
-}
-
 LinkedList::~LinkedList() {
     ListNode* curr = head_;
     while (curr) { 
@@ -192,7 +156,40 @@ FibHeap::FibHeap(std::vector<int>& data): FibHeap() {
 }
 
 FibHeap::FibHeap(FibHeap& other) : FibHeap() {
-     
+    ListNode* src = other.roots.head_;     
+    while (src) {
+        dfs_cpy(src);
+        src = src->next;
+    }
+}
+
+FibHeap& FibHeap::operator=(FibHeap& other) {
+    if (this == &other) return *this;
+    while(!roots.empty()) {
+        Node* v = roots.pop();
+        dfs_delete(v);
+        delete v;
+    }
+
+    ListNode* src = other.roots.head_;     
+    while (src) {
+        dfs_cpy(src);
+        src = src->next;
+    }
+
+    return *this; 
+}
+
+// copies all node successors
+void FibHeap::dfs_cpy(ListNode* v) { 
+    ListNode* curr =  v->node->successors.head_;
+
+    while (curr) {
+        dfs_cpy(curr);
+        insert(curr->node->val);
+        curr = curr->next;
+    }
+    insert(v->node->val);
 }
 
 // recursively deletes all nodes in a tree
@@ -202,7 +199,6 @@ void FibHeap::dfs_delete(Node* v) {
         dfs_delete(tmp); 
         delete tmp;
     }
-    return;
 }
 
 FibHeap::~FibHeap() {

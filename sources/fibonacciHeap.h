@@ -11,13 +11,12 @@ struct ListNode {
 
     ListNode() : next(nullptr), prev(nullptr), node(nullptr) {}
     ListNode(Node* node) : next(nullptr), prev(nullptr), node(node) {}
-    ListNode(ListNode& other) : next(other.next), prev(other.next), node(other.node) {}
-    ListNode& operator=(ListNode& other);
     ~ListNode() = default;
 };
 
 
 class LinkedList {
+    friend class FibHeap;
     ListNode* head_;
     ListNode* tail_;
     size_t size_;
@@ -25,8 +24,6 @@ class LinkedList {
 public:
     // constructors and destructors
     LinkedList() : head_(nullptr), tail_(nullptr), size_(0) {}
-    LinkedList(LinkedList& other);
-    LinkedList& operator=(LinkedList& other);
     ~LinkedList();
 
     // returns number of different degrees of the nodes in list
@@ -76,6 +73,7 @@ class FibHeap {
     size_t n_;
     void addRoot(Node* v);
     void dfs_delete(Node* v);
+    void dfs_cpy(ListNode* v);
 
 public:
     LinkedList roots;
@@ -101,4 +99,7 @@ public:
     void merge(FibHeap& src); 
     void put_away(Node* s);
     bool empty() const;
+    int size() const {
+        return n_;
+    }
 };

@@ -93,18 +93,6 @@ TEST_F(LinkedListTest, RemoveAllNodes) {
     EXPECT_TRUE(list.empty());
 }
 
-TEST_F(LinkedListTest, AssignmentOperatorTest) {
-    LinkedList l1;
-    LinkedList l2;
-    initList(&l1, a);
-    l2 = l1;
-    while (!l1.empty()) {
-        l1.pop();
-    }
-
-    l2.pop();
-}
-
 // TODO Broken merge?
 /*
 TEST_F(LinkedListTest, MergeEmptyEmpty) {

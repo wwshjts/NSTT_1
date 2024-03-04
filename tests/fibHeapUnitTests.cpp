@@ -78,6 +78,29 @@ TEST_F (FibHeapTest, ConsolidateTest) {
     EXPECT_TRUE(h_.degrees() == h_.roots.size());
 }
 
+TEST_F (FibHeapTest, CopyCtrTest) {
+    for (int i = 0; i < 10; i++) {
+        h_.insert(i);
+    }
+    FibHeap h1 = h_;
+    EXPECT_EQ(h1.size(), h_.size()); 
+    while (!h_.empty()) {
+        EXPECT_EQ(h_.extract_min(), h1.extract_min());
+    }
+}
+
+TEST_F (FibHeapTest, AssignmentOperatorTest) {
+    for (int i = 0; i < 10; i++) {
+        h_.insert(i);
+    }
+    FibHeap h1;
+    h1 = h_;
+    EXPECT_EQ(h1.size(), h_.size()); 
+    while (!h_.empty()) {
+        EXPECT_EQ(h_.extract_min(), h1.extract_min());
+    }
+} 
+
 
 int main() {
     //adding new code
