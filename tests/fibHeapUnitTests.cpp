@@ -31,7 +31,7 @@ TEST_F (FibHeapTest, Merge) {
     h_.insert(0);
     h_.insert(1);
     FibHeap tmp{v};
-    h_.merge(&tmp);
+    h_.merge(tmp);
     EXPECT_EQ(-42, h_.peek_min());
 }
 
@@ -39,13 +39,13 @@ TEST_F (FibHeapTest, MergeNonEmptyAndEmpty) {
     h_.insert(0);
     h_.insert(1);
     FibHeap tmp;
-    h_.merge(&tmp);
+    h_.merge(tmp);
     EXPECT_EQ(0, h_.peek_min());
 }
 
 TEST_F (FibHeapTest, MergeEmpty) {
     FibHeap tmp;
-    h_.merge(&tmp);
+    h_.merge(tmp);
     EXPECT_TRUE(h_.empty());
 }
 

@@ -1,64 +1,56 @@
 #include <vector>
 #include <list>
 #include <set>
-class Node;
 
-struct listNode {
-    struct listNode* next;
-    struct listNode* prev;
+class Node;
+struct ListNode {
+    struct ListNode* next;
+    struct ListNode* prev;
     Node* node;
 
-    listNode() { 
-        next = nullptr;
-        prev = nullptr;
-        node = nullptr;
-    }
+    ListNode() : next(nullptr), prev(nullptr), node(nullptr) {}
 };
 
+
 class LinkedList {
-    listNode* head_;
-    listNode* tail_;
+    ListNode* head_;
+    ListNode* tail_;
     size_t size_;
 
 public:
-    LinkedList() {
-        head_ = nullptr;
-        tail_ = nullptr;
-        size_ = 0;
-    }
+    // constructors and destructors
+    LinkedList() : head_(nullptr), tail_(nullptr), size_(0) {}
     ~LinkedList();
-    int empty() const;
-    size_t size() const;
+
     // returns number of different degrees of the nodes in list
     size_t degree() const;
     void add(Node*);
     Node* peek();
     Node* pop();
     void remove(Node*);
-    void merge(LinkedList*);
-    int equal(LinkedList*);
+    // after merging src is no longer available
+    static void merge(LinkedList& dst, LinkedList& src);
+    bool equal(LinkedList& other) const;
+    bool empty() const;
+    size_t size() const;
 };
 
-// TODO maybe this class must be inner class of FibHeap? 
 class Node {
+    friend class FibHeap;
+    friend class LinkedList;
+
+    Node* parent_;
+    bool is_labeled_;
+    ListNode* link_;
 public:
     int val;
-    // TODO this things must be protected somehow, but must be accessed from code in FibHeap
-    int is_labeled;
-    Node* parent;
-    listNode* link;
     LinkedList successors;
 
-    Node(int val) {
-        this->val = val; 
-        is_labeled = 0;
-        parent = nullptr;
-        link = nullptr;
-    }
+    Node(int val) : val(val), is_labeled_(false), parent_(nullptr), link_(nullptr), successors() {}
 
     void addChild(Node* s) {
         successors.add(s);
-        s->parent = this;
+        s->parent_ = this;
     }
 
     size_t degree() {
@@ -71,31 +63,28 @@ class FibHeap {
     Node* min_node_;
     size_t n_;
     void addRoot(Node* v);
-    void DFS_delete(Node* v);
+    void dfs_delete(Node* v);
 
 public:
-    // constructors
-    FibHeap() {
-        min_node_ = nullptr;
-        n_ = 0;
-    } 
+    LinkedList roots;
 
-    FibHeap(std::vector<int> data);
+    // constructors and destructors
+    FibHeap() : min_node_(nullptr), n_(0), roots() {} 
+    FibHeap(std::vector<int>& data);
     ~FibHeap();
+
     // insert val into heap, returns ptr on it
     Node* insert(int val);
     int peek_min();
     // return minimum of val and heap.peek_min() if heap is empty returns val
-    int or_peek_min(int val);
-    int empty() const;
+    int or_peek_min(int val); 
     size_t d() const;
     // return number of different degrees of roots
     size_t degrees() const;
     void consolidate();
     int extract_min();
     void decrease_key(Node* s, int k);
-    void merge(FibHeap* src); 
+    void merge(FibHeap& src); 
     void put_away(Node* s);
-
-    LinkedList roots;
+    bool empty() const;
 };

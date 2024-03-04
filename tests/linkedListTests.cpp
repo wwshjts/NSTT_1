@@ -30,8 +30,8 @@ public:
 TEST_F(LinkedListTest, Empty) {
     LinkedList l1;
     LinkedList l2;
-    EXPECT_TRUE(l1.equal(&l1));
-    EXPECT_TRUE(l2.equal(&l2));
+    EXPECT_TRUE(l1.equal(l1));
+    EXPECT_TRUE(l2.equal(l2));
 }
 
 TEST_F(LinkedListTest, Equal) {
@@ -41,8 +41,8 @@ TEST_F(LinkedListTest, Equal) {
         list.add(v);
         other.add(v);
     }
-    EXPECT_TRUE(list.equal(&other));
-    EXPECT_TRUE(other.equal(&list));
+    EXPECT_TRUE(list.equal(other));
+    EXPECT_TRUE(other.equal(list));
     
 }
 

@@ -5,16 +5,15 @@
 #include "fibonacciHeap.h"
 
 LinkedList::~LinkedList() {
-    listNode* curr = head_;
+    ListNode* curr = head_;
     while (curr) { 
-        listNode* tmp = curr->next;
-        delete(curr);
+        ListNode* tmp = curr->next;
+        delete curr;
         curr = tmp;
     }
 }
 
-int LinkedList::empty() const {
-    // is this a good assertion usage? 
+bool LinkedList::empty() const {
     return (head_ == nullptr) && (tail_ == nullptr);
 }
 
@@ -23,7 +22,7 @@ size_t LinkedList::size() const {
 }
 
 size_t LinkedList::degree() const {
-    listNode* curr = head_;
+    ListNode* curr = head_;
     std::set<size_t> d;
     while (curr) {
         d.insert(curr->node->degree());
@@ -32,27 +31,27 @@ size_t LinkedList::degree() const {
     return d.size();
 }
 
-int LinkedList::equal(LinkedList* other) {
-    assert(other != nullptr);
-    if (this->size() != other->size()) {
+// TODO reference and bool
+bool LinkedList::equal(LinkedList& other) const {
+    if (size() != other.size()) {
         return 0;
     }
-    listNode* v1 = this->head_;
-    listNode* v2 = other->head_; 
-    size_t size = this->size();
+    ListNode* v1 = head_;
+    ListNode* v2 = other.head_; 
+    size_t size = size_;
     for (size_t i = 0; i < size; i++) {
         if (v1->node->val != v2->node->val) {
-            return 0;
+            return false;
         }
     }
-    return 1;
+    return true;
 }
 
 void LinkedList::add(Node* node) {
     assert(node != nullptr);
-    listNode* v = new listNode;
+    ListNode* v = new ListNode;
     v->node = node;
-    node->link = v;
+    node->link_ = v;
     if (empty()) {
         head_ = v;
         tail_ = v;
@@ -67,10 +66,10 @@ void LinkedList::add(Node* node) {
 void LinkedList::remove(Node* node) {
     assert(node != nullptr);
     assert(!empty());
-    assert(node->link != nullptr);
-    listNode* v = node->link;
-    listNode* next = node->link->next;
-    listNode* prev = node->link->prev;
+    assert(node->link_ != nullptr);
+    ListNode* v = node->link_;
+    ListNode* next = node->link_->next;
+    ListNode* prev = node->link_->prev;
 
     if (next) {
         next->prev = prev;
@@ -85,8 +84,8 @@ void LinkedList::remove(Node* node) {
     }
 
     size_--;
-    node->link = nullptr;
-    delete(v);
+    node->link_ = nullptr;
+    delete v;
 }
 
 Node* LinkedList::peek() {
@@ -102,25 +101,25 @@ Node* LinkedList::pop() {
 }
 
 // TODO: I don't know how to implement merge without nulling other list and with O(1) complexity(without copy)
-void LinkedList::merge(LinkedList* other) {
-    if (other->empty()) return;
+void LinkedList::merge(LinkedList& dst, LinkedList& src) {
+    if (src.empty()) return;
 
-    if (this->empty()) {
-        this->head_ = other->head_;
-        this->tail_ = other->tail_;
-        this->size_ = other->size_;
+    if (dst.empty()) {
+        dst.head_ = src.head_;
+        dst.tail_ = src.tail_;
+        dst.size_ = src.size_;
     } else {
-        this->tail_->next = other->head_;
-        other->head_->prev = this->tail_;
-        this->tail_ = other->tail_;
-        this->size_ += other->size_;
+        dst.tail_->next = src.head_;
+        src.head_->prev = dst.tail_;
+        dst.tail_ = src.tail_;
+        dst.size_ += src.size_;
     }
-    other->head_ = nullptr;
-    other->tail_ = nullptr;
+    src.head_ = nullptr;
+    src.tail_ = nullptr;
 }
 
 
-FibHeap::FibHeap(std::vector<int> data): FibHeap() {
+FibHeap::FibHeap(std::vector<int>& data): FibHeap() {
 
     if (data.empty()) return;
 
@@ -136,11 +135,11 @@ FibHeap::FibHeap(std::vector<int> data): FibHeap() {
     }
 }
 // recursively deletes all nodes in a tree
-void FibHeap::DFS_delete(Node* v) {
+void FibHeap::dfs_delete(Node* v) {
     while (!v->successors.empty()) {
         Node* tmp = v->successors.pop();
-        DFS_delete(tmp); 
-        delete(tmp);
+        dfs_delete(tmp); 
+        delete tmp;
     }
     return;
 }
@@ -148,12 +147,12 @@ void FibHeap::DFS_delete(Node* v) {
 FibHeap::~FibHeap() {
     while(!roots.empty()) {
         Node* v = roots.pop();
-        DFS_delete(v);
-        delete(v);
+        dfs_delete(v);
+        delete v;
     }
 }
 
-int FibHeap::empty() const {
+bool FibHeap::empty() const {
     return (min_node_ == nullptr) && (roots.empty());
 }
 
@@ -182,16 +181,16 @@ void FibHeap::addRoot(Node* v) {
     }
 }
 
-void FibHeap::merge(FibHeap* src) {
-    this->roots.merge(&src->roots);
+void FibHeap::merge(FibHeap& src) {
+    LinkedList::merge(roots, src.roots);
 
-    if ((!this->empty() && !src->empty()) && this->peek_min() > src->peek_min()) {
-        this->min_node_ = src->min_node_;
+    if ((!empty() && !src.empty()) && peek_min() > src.peek_min()) {
+        min_node_ = src.min_node_;
     }
-    if ((this->empty() && !src->empty())) {
-        this->min_node_ = src->min_node_;
+    if ((empty() && !src.empty())) {
+        min_node_ = src.min_node_;
     }
-    this->n_ += src->n_;
+    n_ += src.n_;
 }
 
 int FibHeap::peek_min() {
@@ -250,24 +249,24 @@ int FibHeap::extract_min() {
     assert(!empty());
     roots.remove(min_node_);
     int res = min_node_->val;
-    roots.merge(&min_node_->successors);
-    delete(min_node_);
+    LinkedList::merge(roots, min_node_->successors);
+    delete min_node_;
     min_node_ = nullptr;
     consolidate();
     return res;
 }
 
 void FibHeap::put_away(Node* s) {
-    Node* parent = s->parent;
+    Node* parent = s->parent_;
     if (parent) {
         parent->successors.remove(s);
-        if (parent->is_labeled) {
+        if (parent->is_labeled_) {
             put_away(parent);
         } else {
-            parent->is_labeled = true;
+            parent->is_labeled_ = true;
         }
     }
-    s->parent = nullptr; 
+    s->parent_ = nullptr; 
     if (s->val == or_peek_min(s->val)) {
         min_node_ = s;
     }
@@ -276,7 +275,7 @@ void FibHeap::put_away(Node* s) {
 
 void FibHeap::decrease_key(Node* s, int k) {
     assert(s != nullptr && s->val >= k);
-    Node* parent = s->parent;
+    Node* parent = s->parent_;
     s->val = k;
     if ((parent != nullptr) && (k < parent->val)) {
         put_away(s);
