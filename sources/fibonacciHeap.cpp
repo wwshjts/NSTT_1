@@ -268,38 +268,37 @@ size_t FibHeap::d() const {
 }
 
 void FibHeap::consolidate() {
-    size_t d_n = d() + 1;    
+    size_t d_n = d() * d() + 1;    
     std::vector<Node*> a(d_n);
 
-    size_t added = 0;
-    while (roots.size()) {
-        Node* v = roots.peek();
-        if (a[v->degree()] == nullptr) {
-            a[v->degree()] = v;
-            roots.remove(v);
+    size_t actual = 0;
+    while (!roots.empty()) {
+        Node* v = roots.pop();
+        size_t deg = v->degree();
+        if (a[deg] == nullptr) {
+            a[deg] = v;
+            actual++;
         } else {
-            Node* w = a[v->degree()];
-            a[v->degree()] = nullptr;
-            added--;
-            roots.remove(v);
-            if (v->val <= w->val) {
-                v->addChild(w);
+            Node* u = a[deg];
+            a[deg] = nullptr;
+            if (v->val <= u->val) {
+                v->addChild(u);
                 roots.add(v);
             } else {
-                w->addChild(v);
-                roots.add(w);
+                u->addChild(v);
+                roots.add(u);
             }
+            actual--;
         }
-    } 
+    }
 
     for (Node* v : a) {
         if (v == nullptr) continue;
         if (min_node_ == nullptr || min_node_->val > v->val) {
             min_node_ = v;
         }
-
         roots.add(v);
-    } 
+    }
 }
 
 int FibHeap::extract_min() {

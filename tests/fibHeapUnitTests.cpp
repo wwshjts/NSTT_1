@@ -71,11 +71,17 @@ TEST_F (FibHeapTest, DecreaseKey) {
 }
 
 TEST_F (FibHeapTest, ConsolidateTest) {
-    for (int i = 0; i < 100; i++) {
-        h_.insert(std::rand());
+    FibHeap heap;
+    for (int i = 0; i < 10000; i++) {
+        heap.insert(i);
     }
-    h_.consolidate();
-    EXPECT_TRUE(h_.degrees() == h_.roots.size());
+    std::cout << heap.size() << std::endl;
+    // heap.consolidate();
+    for (int i = 0; i < 10000; i++) {
+        std::cout << i << std::endl;
+        EXPECT_EQ(i, heap.extract_min());
+    }
+
 }
 
 TEST_F (FibHeapTest, CopyCtrTest) {
