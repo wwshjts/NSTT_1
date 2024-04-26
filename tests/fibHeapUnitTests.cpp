@@ -75,8 +75,6 @@ TEST_F (FibHeapTest, ConsolidateTest) {
     for (int i = 0; i < 10000; i++) {
         heap.insert(i);
     }
-    std::cout << heap.size() << std::endl;
-    // heap.consolidate();
     for (int i = 0; i < 10000; i++) {
         std::cout << i << std::endl;
         EXPECT_EQ(i, heap.extract_min());

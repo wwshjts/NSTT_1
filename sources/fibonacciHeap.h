@@ -71,6 +71,7 @@ class FibHeap {
 
     Node* min_node_;
     size_t n_;
+    size_t max_degree;
     void addRoot(Node* v);
     void dfs_delete(Node* v);
     void dfs_cpy(ListNode* v);
@@ -79,7 +80,7 @@ public:
     LinkedList roots;
 
     // constructors and destructors
-    FibHeap() : min_node_(nullptr), n_(0), roots() {} 
+    FibHeap() : min_node_(nullptr), n_(0), roots(), max_degree(1) {} 
     FibHeap(std::vector<int>& data);
     FibHeap(FibHeap& other);
     FibHeap& operator=(FibHeap& other);
