@@ -1,55 +1,56 @@
-.PHONY : all clean test
-#target setup
-target_name = fibonacciHeap 
-headers_name = fibonacciHeap 
+.PHONY : all clean 
+# setup dirs
+src_dir := sources
+build_dir := build
+test_dir := tests
 
-#dirs setup
-src_dir := sources/
-header_dir := sources/
-build_dir := bin/
-test_dir := tests/
+# target setup
+target_name := 
+object_files := 
 
-#CC setup
-CC := clang++
-debug_flags := -fsanitize=address -fsanitize=undefined -fsanitize=leak
-	
+# CC setup
+CC := g++
+flags := -fsanitize=address -fsanitize=undefined -fsanitize=leak
 
-#declaring a dependences 
-target := $(addprefix $(src_dir), $(target_name)) 
-target := $(addsuffix .cpp, $(target))
+# setup 
+target_src := $(addprefix $(src_dir)/, $(target_name)) 
+target_src := $(addsuffix .cpp, $(target_src))
 
-objects := $(addprefix $(build_dir), $(target_name))
+target := $(addprefix $(build_dir)/, $(target_name)) 
+target := $(addsuffix .o, $(target))
+
+objects := $(addprefix $(build_dir)/, $(object_files))
 objects := $(addsuffix .o, $(objects))
 
-headers := $(addprefix $(header_dir), $(headers_name)) 
+headers := $(addprefix $(src_dir)/, $(object_files)) 
 headers := $(addsuffix .h, $(headers)) 
 
-
-
-all : $(build_dir) $(objects)
+# build
+all : $(build_dir) $(target) $(objects) 
 
 $(build_dir) : 
-	mkdir $(build_dir)
+	@mkdir $(build_dir)
 
+$(target) : $(objects) $(target_src)
+	$(CC) $(target_src) $(objects) -o $(target) $(flags)
 
-$(objects) : $(build_dir)%.o : $(target) $(headers) 
-	$(CC) -c $(src_dir)$*.cpp  -o  $(build_dir)$*.o
+$(objects) : $(build_dir)/%.o : $(src_dir)/%.cpp $(src_dir)/%.h  
+	$(CC) -c $(src_dir)/$*.cpp -o $(build_dir)/$*.o $(flags) 
+
 
 
 #test setup
-test_files := $(wildcard $(test_dir)*.cpp)
+test_files_src := $(wildcard $(test_dir)/*.cpp)
 # TODO
-test_files := $(test_files:.cpp=.out)
+test_files := $(test_files_src:.cpp=.out)
 
 
-test : $(test_files) 
+test : $(test_files)
 	@echo "All test passed"
 
-$(test_files) : %.out: $(target) $(headers) $(objects) 
-	$(CC) $*.cpp $(objects) -o $*.out -lgtest -lgtest_main $(debug_flags)
+$(test_files) : %.out: $(target) $(headers) $(objects) $(test_files_src)
+	$(CC) $*.cpp $(objects) -o $*.out -lgtest -lgtest_main $(flags)
 	$*.out
 
-
-clean : 
-	rm -f $(objects)
-	rm -f $(test_files)
+clean :
+	rm $(objects) $(target) $(test_files)
