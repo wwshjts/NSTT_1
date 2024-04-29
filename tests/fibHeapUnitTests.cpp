@@ -85,6 +85,30 @@ TEST(fib_heap_test, extract_min) {
     EXPECT_EQ("b", string_heap.extract_min());
 }
 
+TEST(fib_heap_test, decrease_key) {
+    FibHeap<std::string> string_heap;
+
+    string_heap.insert("b");
+    string_heap.insert("aaa");    
+    FibHeapNode<std::string>* s = string_heap.insert_node("c");
+    string_heap.decrease_key(s, "a");
+    EXPECT_EQ("a", string_heap.extract_min());
+    EXPECT_EQ("aaa", string_heap.extract_min());
+}
+
+
+TEST(fib_heap_test, stress_test) {
+    FibHeap<int> heap;
+
+    for (size_t i = 0; i < 10000; i++) {
+        heap.insert(i);
+    }
+
+    for (size_t i = 0; i < 10000; i++) {
+        EXPECT_EQ(i, heap.extract_min());
+    }
+
+}
 // TEST_F(FibHeapTest, InitWithVector) {
 //     FibHeap tmp{v};
 //     EXPECT_EQ(-42, tmp.peek_min());

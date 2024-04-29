@@ -12,7 +12,7 @@ class list;
 template<typename T>
 struct FibHeapNode {
     T value;
-    FibHeapNode<T>* parent;
+    FibHeapNode<T>* parent = nullptr;
     bool is_labeled = false;
 
     typename std::list<FibHeapNode<T>*>::iterator link;
@@ -33,6 +33,7 @@ struct FibHeapNode {
 
     void add_child(FibHeapNode<T>* node) {
         successors.add(node);
+        node->parent = this;
     }
 
     size_t degree() const {
@@ -183,11 +184,6 @@ class FibHeap {
         for (FibHeapNode<T>* node : v->successors){
             dfs_delete(node);
         }        
-        // while (!v->successors.empty()) {
-        //     FibHeapNode<T>* tmp = v->successors.pop();
-        //     dfs_delete(tmp); 
-        //     delete tmp;
-        // }
         delete v;
     }
 
@@ -252,6 +248,21 @@ public:
 
     void insert(FibHeapNode<T>* node) {
         roots.add(node);
+        n_++;
+
+        if (min_node_ == nullptr || node->value < peek_min()) {
+            min_node_ = node;
+        }
+    }
+
+    FibHeapNode<T>* insert_node(const T& val) {
+        FibHeapNode<T>* v = new FibHeapNode<T>(val);        
+        roots.add(v);
+        n_++;
+        if (min_node_ == nullptr || val < peek_min()) {
+            min_node_ = v;
+        }
+        return v;
     }
 
     T& peek_min() {
@@ -262,7 +273,7 @@ public:
     }
 
     // return minimum of val and heap.peek_min() if heap is empty returns val
-    T& or_peek_min(const T& val) {
+    T& or_peek_min(T& val) {
         if (!empty()) {
             return peek_min();
         } else {
@@ -287,10 +298,10 @@ public:
                 a[deg] = nullptr;
                 if (v->value <= u->value) {
                     v->add_child(u);
-                    roots.add(v);
+                    addRoot(v);
                 } else {
                     u->add_child(v);
-                    roots.add(u);
+                    addRoot(u);
                 }
             }
         }
@@ -316,13 +327,15 @@ public:
         delete min_node_;
         min_node_ = nullptr;
         consolidate();
+        n_--;
         return res;
     }
 
     void decrease_key(FibHeapNode<T>* s, const T& k) {
         assert(s != nullptr && s->value >= k);
-        FibHeapNode<T>* parent = s->parent_;
+        FibHeapNode<T>* parent = s->parent;
         s->value = k;
+        std::cout << parent << "\n";
         if ((parent != nullptr) && (k < parent->value)) {
             put_away(s);
         } else if (parent == nullptr && (k < min_node_->value)) {
@@ -347,14 +360,14 @@ public:
         FibHeapNode<T>* parent = s->parent;
         if (parent) {
             parent->successors.remove(s);
-            if (parent->is_labeled_) {
+            if (parent->is_labeled) {
                 put_away(parent);
             } else {
-                parent->is_labeled_ = true;
+                parent->is_labeled = true;
             }
         }
         s->parent = nullptr; 
-        if (s->val == or_peek_min(s->val)) {
+        if (s->value == or_peek_min(s->value)) {
             min_node_ = s;
         }
         addRoot(s);
@@ -363,6 +376,7 @@ public:
     void addRoot(FibHeapNode<T>* v) {
         if (v == nullptr) return;
         roots.add(v);
+        v->parent = nullptr;
         n_++;
 
         if (v->value == or_peek_min(v->value)) {
