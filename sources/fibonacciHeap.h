@@ -55,11 +55,20 @@ class list {
     std::list<FibHeapNode<T>* > inner_;
 
 public:
+    list() = default;
+
+    list<T>(list<T>&& other) : inner_ {std::move(other.inner_)} {}
+
+    list<T>& operator=(list<T>&& other) {
+        inner_ = std::move(other.inner_);        
+        return *this;
+    }
+
     void add(FibHeapNode<T>* node) {
         node->link = inner_.insert(inner_.end(), node);
     }
 
-    // after this field link is invalid
+    // after this link is invalid
     FibHeapNode<T>* pop() {
         FibHeapNode<T>* res = *(inner_.begin());
         inner_.pop_front();
@@ -97,72 +106,6 @@ public:
         return inner_.end();
     }
 };
-
-
-// class Node;
-
-// struct ListNode {
-//     struct ListNode* next;
-//     struct ListNode* prev;
-//     Node* node;
-
-//     ListNode() : next(nullptr), prev(nullptr), node(nullptr) {}
-//     ListNode(Node* node) : next(nullptr), prev(nullptr), node(node) {}
-//     ~ListNode() = default;
-// };
-
-
-// class LinkedList {
-//     friend class FibHeap;
-//     ListNode* head_;
-//     ListNode* tail_;
-//     size_t size_;
-
-// public:
-//     // constructors and destructors
-//     LinkedList() : head_(nullptr), tail_(nullptr), size_(0) {}
-//     ~LinkedList();
-
-//     // returns number of different degrees of the nodes in list
-//     size_t degree() const;
-//     void add(Node*);
-//     void add(ListNode*);
-//     Node* peek();
-//     Node* pop();
-//     void remove(Node*);
-//     void remove(ListNode*);
-//     // after merging src is no longer available
-//     static void merge(LinkedList& dst, LinkedList& src);
-//     bool equal(LinkedList& other) const;
-//     bool empty() const;
-//     size_t size() const;
-// };
-
-// class Node {
-//     friend class FibHeap;
-//     friend class LinkedList;
-
-//     Node* parent_;
-//     bool is_labeled_;
-//     ListNode* link_;
-// public:
-//     int val;
-//     LinkedList successors;
-
-//     Node(int val) : val(val), is_labeled_(false), parent_(nullptr), link_(nullptr), successors() {}
-//     Node(Node& other) : val(other.val), is_labeled_(other.parent_), link_(other.link_), successors(other.successors) {} 
-//     Node& operator=(Node& other);
-//     ~Node() = default;
-
-//     void add_child(Node* s) {
-//         successors.add(s);
-//         s->parent_ = this;
-//     }
-
-//     size_t degree() {
-//         return successors.size();
-//     }
-// };
 
 template<typename T>
 class FibHeap {
@@ -213,7 +156,20 @@ public:
             dfs_cpy(root);
         }
     }
-    
+
+    FibHeap(FibHeap<T>&& other) : 
+        min_node_ { other.min_node_ },
+        n_ { other.n_ },
+        max_degree { other.max_degree }, 
+        roots { std::move(other.roots) } {}
+
+    FibHeap<T>& operator=(FibHeap<T>&& other) {
+        min_node_ = other.min_node_;
+        n_ = other.n_;
+        max_degree = other.max_degree;
+        roots = std::move(other.roots);
+    }    
+
     FibHeap<T>& operator=(FibHeap<T>& other) {
         if (this == &other) return *this;
 
@@ -335,7 +291,6 @@ public:
         assert(s != nullptr && s->value >= k);
         FibHeapNode<T>* parent = s->parent;
         s->value = k;
-        std::cout << parent << "\n";
         if ((parent != nullptr) && (k < parent->value)) {
             put_away(s);
         } else if (parent == nullptr && (k < min_node_->value)) {
