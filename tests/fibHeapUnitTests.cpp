@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include <vector>
+#include <set>
 #include "../sources/fibonacciHeap.h"
 
 FibHeap<char> get_alphabet(){
@@ -112,14 +113,62 @@ TEST(fib_heap_test, decrease_key) {
 TEST(fib_heap_test, stress_test) {
     FibHeap<int> heap;
 
-    for (size_t i = 0; i < 10000; i++) {
+    for (size_t i = 10000; i > 0; i--) {
         heap.insert(i);
     }
 
-    for (size_t i = 0; i < 10000; i++) {
+    for (size_t i = 1; i <= 10000; i++) {
         EXPECT_EQ(i, heap.extract_min());
     }
+}
 
+TEST(fib_heap_test, basic_iterator_test) {
+    FibHeap<std::string> heap;
+    std::set<std::string> expected;
+    std::set<std::string> actual;
+
+
+    for (size_t i = 10; i > 0; i--) {
+        heap.insert(std::to_string(i));
+        expected.insert(std::to_string(i));
+    }
+
+    for (std::string s : heap) {
+        actual.insert(s);   
+    }
+
+    EXPECT_EQ(actual, expected);
+
+}
+
+TEST(fib_heap_test, iterator_test) {
+    FibHeap<std::string> heap;
+    std::set<std::string> expected;
+    std::set<std::string> actual;
+
+
+    for (size_t i = 10; i > 0; i--) {
+        heap.insert(std::to_string(i));
+        expected.insert(std::to_string(i));
+    }
+
+    heap.consolidate();
+
+    for (std::string s : heap) {
+        actual.insert(s);   
+    }
+
+    EXPECT_EQ(actual, expected);
+
+}
+
+TEST(fib_heap_test, empty_iterator_test) {
+    FibHeap<std::string> heap;
+    std::set<std::string> actual;
+
+    for (std::string s : heap) {
+        actual.insert(s);   
+    }
 }
 
 int main() {

@@ -4,6 +4,7 @@
 #include <set>
 #include <exception>
 #include <iostream>
+#include <deque>
 
 template<typename T>
 class list;
@@ -140,6 +141,64 @@ class FibHeap {
     
 
 public:
+
+    class iterator {
+        FibHeapNode<T>* curr_node_;
+        typename std::list<FibHeapNode<T>*>::iterator curr_root_;
+        std::deque<FibHeapNode<T>*> que_;
+
+    public:  
+        iterator(typename std::list<FibHeapNode<T>*>::iterator root) : curr_node_ { nullptr }, curr_root_ { root } {}
+
+        void fill_que() {
+            for(FibHeapNode<T>* node : curr_node_->successors) {
+                que_.push_back(node);
+            }
+        }
+
+
+        const T& operator++() {
+            FibHeapNode<T>* res;
+            if (curr_node_ == nullptr) {
+                curr_node_ = *(curr_root_);
+            } else {
+                curr_node_ = que_.front();
+                que_.pop_front();
+            }
+
+            fill_que();
+            res = curr_node_;
+
+            if (que_.empty()) {
+                ++curr_root_;
+                curr_node_ = nullptr;
+            }
+
+            return res->value;
+        }
+
+        const T& operator*() {
+            if (curr_node_ == nullptr) {
+                return (*curr_root_)->value;
+            } else {
+                return que_.front()->value;
+            }
+
+        }
+
+        const T* operator->() {
+            if (curr_node_ == nullptr) {
+                return ((*curr_root_)->value);
+            } else {
+                return &(que_.front()->value);
+            }
+        }
+
+        bool operator!=(const iterator& other) {
+            return curr_root_ != other.curr_root_; 
+        }
+    };
+;
     list<T> roots;
 
     // constructors and destructors
@@ -155,7 +214,7 @@ public:
         for (FibHeapNode<T>* root : other.roots) {
             dfs_cpy(root);
         }
-    }
+    };
 
     FibHeap(FibHeap<T>&& other) : 
         min_node_ { other.min_node_ },
@@ -181,6 +240,15 @@ public:
 
     ~FibHeap() {
         free();  
+    }
+
+    // iterator things
+    const iterator begin() {
+        return iterator(roots.begin());
+    }
+
+    const iterator end() {
+        return iterator(roots.end());        
     }
 
     // insert val into heap, returns ptr on it
